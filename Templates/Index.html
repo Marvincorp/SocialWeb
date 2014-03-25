@@ -14,9 +14,10 @@
 		}
 		
 		.filler{
-			padding-left:10px;
+			padding-left:28px;
+			padding-top:5px;
 			background-color: rgba(47,112,186,0.9);
-			height:30px;
+			height:40px;
 			color:white;
 		}
 		</style>
@@ -24,7 +25,9 @@
 	<body>
 		<link rel="stylesheet" type="text/css" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
 		<link rel="stylesheet" type="text/css" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
-		<div class="filler" id="filler">Twitterulization</div>
+		<div class="filler" id="filler"><span>Twitterulization</span>
+		<input style="float:right;margin-right:28px;" type="button" class="btn btn-primary" value="Show Visualization" onclick="show(this,'#wrapper')"/>
+		</div>
 		<div class="container-fluid" style="height: 90%">
 			<div class="col-md-4"  style="height:100%">
 				<div style="height:20%">
@@ -50,7 +53,6 @@
 					</div>
 				</div>
 				<div style="height:50%;">
-					<input type="button" class="btn btn-primary" value="Show Visualization" onclick="show('#wrapper')"/>
 					<div id="wrapper" style="display:none;">
 						<span><img class="img-responsive" src='http://bni.harrymars.nl/denhaag/img/ani.gif'></span>
 						</div>
@@ -90,8 +92,14 @@
 			 search();
 			});
 			
-			function show(element){
+			function show(sender,element){
 				$(element).fadeToggle("slow");
+				if(sender.value == "Show Visualization"){
+					sender.value = "Hide Visualization";
+				} else {
+					sender.value = "Show Visualization";
+				}
+				
 			}
 		</script>		
 	</body>
