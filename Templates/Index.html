@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>TSW Assignment 3</title>
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+
+<style>
+html, body {
+   height: 90%;
+}
+</style>
+</head>
+
+<body>
+<link rel="stylesheet" type="text/css" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
+<h1 style="text-align :center; height:10%">Twitterulization</h1>
+<div class="container-fluid" style="height: 90%">
+<div class="col-md-4"  style="height:100%">
+<div style="height:20%">
+<h2>Search: </h2>
+<input id="input1" placeholder="twitter" type="search">
+<input id="search1" class='btn btn-primary' type="button" value="search">
+</div>
+<div id="result" style="height:80%; overflow:auto">-</div>
+</div>
+<div class="col-md-4" style="height:100%;">
+<div id="carousel" style="max-height:100%; overflow:auto">-
+</div>
+</div>
+<div class="col-md-4" style="height:100%;">
+<div style="height:50%;">
+<h2>Related: </h2>
+<div id="related">
+<input type="checkbox">dog<br>
+<input type="checkbox">pet<br>
+<input type="checkbox">girl<br>
+<input type="checkbox">child<br>
+<input type="checkbox">pictures<br>
+<input type="checkbox">animal<br>
+</div>
+</div>
+<div style="height:50%;">
+<h2>Visualisation </h2>
+<span><img class="img-responsive" src='http://bni.harrymars.nl/denhaag/img/ani.gif'></span>
+</div>
+</div>
+</div> 
+<p id="dump" style="max-width:100%;overflow: auto"></p>
+<script>
+function search(){
+var query = $('#input1').val();
+$.getJSON('/search',data={'query': query}, function(json){
+console.log(json);
+var container = $('<div />');
+var photocontainer = $('<div style="height:100%" class="carousel slide" data-ride="carousel" />');
+//$('#dump').html("some"));
+for (tweet in json.statuses){
+	container.append('<p><em>'+JSON.stringify(json.statuses[tweet].text)+'</em></p>');
+    if(json.statuses[tweet].entities.media){
+	photocontainer.append('<span><img class="img-responsive" src='+JSON.stringify(json.statuses[tweet].entities.media[0].media_url)+'></span>');
+	photocontainer.append('<span>'+JSON.stringify(json.statuses[tweet].user.screen_name+'</span>'));
+	};
+$.get('/getRelated', function(response){
+//alert(response);
+});
+}
+$('#result').html(container);
+$('#carousel').html(photocontainer);
+});
+};
+
+function analyse(){
+$('#related').html("relate to this");
+};
+
+$('#search1').on('click', function(e){
+ search();
+});
+</script>
+</div>
+</body>
