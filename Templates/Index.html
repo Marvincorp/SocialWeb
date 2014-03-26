@@ -44,14 +44,15 @@
 			<div class="col-md-4" style="height:100%;">
 				<div style="height:50%;">
 					<div id="related">
-					<input type="checkbox">dog<br>
-					<input type="checkbox">pet<br>
-					<input type="checkbox">girl<br>
-					<input type="checkbox">child<br>
-					<input type="checkbox">pictures<br>
-					<input type="checkbox">animal<br>
+						<h3>Hashtags:</h3>
+						<span id="hashtags"></span>
+						<h3>Mentioned:</h3>
+						<span id="screenNames"></span>
+						<h3>Words:</h3>
+						<span id="wordFr"></span>
 					</div>
 				</div>
+				
 				<div style="height:50%;">
 					<div id="wrapper" style="display:none;">
 						<span><img class="img-responsive" src='http://bni.harrymars.nl/denhaag/img/ani.gif'></span>
@@ -59,7 +60,7 @@
 					</div>
 				</div>
 			</div> 
-			<p id="dump" style="max-width:100%;overflow: auto"></p>
+			<p id="dump" style="max-width:100%;overflow: auto"> test </p>
 		</div>
 		<script>
 			function search(){
@@ -68,25 +69,23 @@
 			console.log(json);
 			var container = $('<div />');
 			var photocontainer = $('<div style="height:100%" class="carousel slide" data-ride="carousel" />');
-			//$('#dump').html("some"));
-			for (tweet in json.statuses){
-				container.append('<p><em>'+JSON.stringify(json.statuses[tweet].text)+'</em></p>');
-			    if(json.statuses[tweet].entities.media){
-				photocontainer.append('<span><img class="img-responsive" src='+JSON.stringify(json.statuses[tweet].entities.media[0].media_url)+'></span>');
-				photocontainer.append('<span>'+JSON.stringify(json.statuses[tweet].user.screen_name)+'</span>');
+			for (tweet in json[0].statuses){
+				container.append('<p><em>'+JSON.stringify(json[0].statuses[tweet].text)+'</em></p>');
+			    if(json[0].statuses[tweet].entities.media){
+				photocontainer.append('<span><img class="img-responsive" src='+JSON.stringify(json[0].statuses[tweet].entities.media[0].media_url)+'></span>');
+				photocontainer.append('<span>'+JSON.stringify(json[0].statuses[tweet].user.screen_name)+'</span>');
 				};
-			$.get('/getRelated', function(response){
-			//alert(response);
-			});
 			}
 			$('#result').html(container);
 			$('#carousel').html(photocontainer);
+			
+			$('#dump').html(JSON.stringify(json[1]));
+			$('#hashtags').html(JSON.stringify(json[1]["hashtags"]));
+			$('#screenNames').html(JSON.stringify(json[1]["screenNames"]));
+			$('#wordFr').html(JSON.stringify(json[1]["words"]));
 			});
 			};
 			
-			function analyse(){
-			$('#related').html("relate to this");
-			};
 			
 			$('#search1').on('click', function(e){
 			 search();
