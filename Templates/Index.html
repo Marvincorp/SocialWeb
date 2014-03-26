@@ -50,6 +50,8 @@
 						<span id="screenNames"></span>
 						<h3>Words:</h3>
 						<span id="wordFr"></span>
+						<h3>Vert Related Words:</h3>
+						<span id="veryRelated"></span>
 					</div>
 				</div>
 				
@@ -79,13 +81,13 @@
 			$('#result').html(container);
 			$('#carousel').html(photocontainer);
 			
-			$('#dump').html(JSON.stringify(json[1]));
+			$('#veryRelated').html(JSON.stringify(json[2]));
 			$('#hashtags').html(JSON.stringify(json[1]["hashtags"]));
 			$('#screenNames').html(JSON.stringify(json[1]["screenNames"]));
 			$('#wordFr').html(JSON.stringify(json[1]["words"]));
+			$('#veryRelated').html(JSON.stringify(json[2]));
 			});
 			};
-			
 			
 			$('#search1').on('click', function(e){
 			 search();
@@ -100,6 +102,6 @@
 				}
 				
 			}
-		</script>		
+		</script>	
 	</body>
 </html>

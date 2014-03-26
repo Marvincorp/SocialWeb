@@ -3,6 +3,7 @@ from collections import Counter
 import requests
 import json
 import nltk
+import xmltodict
 from nltk.corpus import stopwords
 
 app = Flask(__name__)
@@ -15,7 +16,8 @@ OAUTH_TOKEN = '2322817648-npNVa1PhLaspojJ4z04qkfnCKZPtvFR5LqPX8Fa'
 OAUTH_TOKEN_SECRET = 'DmuYAL9RivUMZmCa7zlOD4tG3Nx6G4qj24pLT9MI8oUjl'
 auth = twitter.oauth.OAuth(OAUTH_TOKEN, OAUTH_TOKEN_SECRET,CONSUMER_KEY, CONSUMER_SECRET)
 twitter_api = twitter.Twitter(auth=auth) 
-related = []
+
+relatedKey = 'sampleapikey'
 
 @app.route("/")
 def first_page():
@@ -25,16 +27,23 @@ def first_page():
 def search():
 	app.logger.debug('You arrived at: Search')
 	app.logger.debug('I received the following arguments: ' + str(request.args) )
-	query = request.args.get('query', None)
-	
-	q = query
+	q = request.args.get('query', None)
 	count = 10
 	search_results = twitter_api.search.tweets(q=q, count=count, lang="en")
 	statuses = search_results['statuses'] 
-	status_texts = [ status['text']#.replace('"', '\\"')
+	status_texts = [ status['text']
 		for status in statuses ]
-	return json.dumps([search_results, analyse(search_results)])
+		
+	p = {'key': relatedKey, 'base': q}
+	related = requests.get('http://www.veryrelated.com/related-api-v1.php', params = p)	
+	return json.dumps([search_results, analyse(search_results),getRelated(related.content)])
 
+def getRelated(xml):
+	parsed = xmltodict.parse(xml)
+	related = {rel['Text']: rel['HowRelated'] for rel in parsed['ResultSet']['Result']} 
+	app.logger.debug(str(sorted(related.items(), key=lambda t: t[1], reverse=True)))
+	return sorted(related.items(), key=lambda t: t[1], reverse=True)
+	
 def analyse(search_results):
 	app.logger.debug('You arrived at: Analyse')
 	hashtags = []	
@@ -63,10 +72,6 @@ def analyseText(texts):
 				skip.append(token)
 			elif token.lower() not in stopwords.words('english') and token not in skip:
 				tokenized.append(token)
-		#fd = nltk.FreqDist(tokenized)
-		#tf_idf[token] = TextCollection.tf_idf(collection, token, txt)
-		#sorted(tokenized, key=tf_idf.__getitem__)
-	app.logger.debug("skipped "+str(skip)+", tokenized "+str(tokenized))
 	return tokenized
 	                                                                                                                                                                                                                                                                                                                                                    
 
