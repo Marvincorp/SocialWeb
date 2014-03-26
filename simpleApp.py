@@ -32,16 +32,16 @@ def search():
 	search_results = twitter_api.search.tweets(q=q, count=count, lang="en")
 	statuses = search_results['statuses'] 
 	status_texts = [ status['text']
-		for status in statuses ]
-		
+		for status in statuses ]	
 	p = {'key': relatedKey, 'base': q}
-	related = requests.get('http://www.veryrelated.com/related-api-v1.php', params = p)	
-	return json.dumps([search_results, analyse(search_results),getRelated(related.content)])
+	req = requests.get('http://www.veryrelated.com/related-api-v1.php', params = p)
+	if req.status_code == requests.codes.ok:
+		related = getRelated(req.content)	
+	return json.dumps([search_results, analyse(search_results),related])
 
 def getRelated(xml):
 	parsed = xmltodict.parse(xml)
 	related = {rel['Text']: rel['HowRelated'] for rel in parsed['ResultSet']['Result']} 
-	app.logger.debug(str(sorted(related.items(), key=lambda t: t[1], reverse=True)))
 	return sorted(related.items(), key=lambda t: t[1], reverse=True)
 	
 def analyse(search_results):
