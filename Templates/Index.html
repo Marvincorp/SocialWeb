@@ -61,6 +61,12 @@
 			{
 				color: black;
 			}
+			
+			.link{
+				width:100px;
+				word-wrap: break-word;
+				overflow: hidden;
+			}
 		</style>
 	</head>
 	<body>
@@ -91,13 +97,13 @@
 						<li><a id="mentButton" onclick="ToggleTab(this)" href="#mentionDiv">Mentioned</a></li>
 					</ul>
 					<br>
-						<div id="hashDiv">
+						<div id="hashDiv" style="overflow:auto;height:450px;">
 						<span id="hashtags"></span>
 						</div>
-						<div id="mentionDiv">
+						<div id="mentionDiv" style="overflow:auto;height:450px;">
 						<span id="screenNames"></span>
 						</div>
-						<div id="wordDiv">
+						<div id="wordDiv" style="overflow:auto;height:450px;">
 							<p>
 								<label>Words</label>
 								<span id="wordFr">...</span>
@@ -128,8 +134,7 @@
 				$("#tabs").tabs({ fx: {opacity: 'toggle'} });
 			});
 			
-			function search(){
-			var query = $('#input1').val();
+			function search(query){
 			$.getJSON('/search',data={'query': query}, function(json){
 			console.log(json);
 			var container = $('<div />');
@@ -144,18 +149,78 @@
 			$('#result').html(container);
 			$('#carousel').html(photocontainer);
 			
-			$('#hashtags').html(JSON.stringify(json[1]["hashtags"]));
-			$('#screenNames').html(JSON.stringify(json[1]["screenNames"]));
-			$('#wordFr').html(JSON.stringify(json[1]["words"]));
-			$('#veryRelated').html(JSON.stringify(json[2]));
-			$('#veryRelated').html(JSON.stringify(json[2]));
-			$('#synonyms').html(JSON.stringify(json[3]));
+			var hashtags = JSON.stringify(json[1]["hashtags"]);
+			var hashtagArray = stripTags(hashtags);
+			var html = createHtml(hashtagArray);
+			$('#hashtags').html(html);
+			
+			var screennames = JSON.stringify(json[1]["screenNames"]);
+			var screennameArray = stripTags(screennames);
+			html = createHtml(screennameArray);
+			$('#screenNames').html(html);
+			
+			var wordFr = JSON.stringify(json[1]["words"]);
+			var wordFrArray = stripTags(wordFr);
+			html = createHtml(wordFrArray);
+			$('#wordFr').html(html);
+			
+			var veryRelated = JSON.stringify(json[2]);
+			var veryRelatedArray = stripTags(veryRelated);
+			html = createHtml(veryRelatedArray);
+			$('#veryRelated').html(html);
+			
+			//$('#veryRelated').html(JSON.stringify(json[2]));
+			
+			var synonyms = JSON.stringify(json[3]);
+			var synonymsArray = stripTags(synonyms);
+			html = createHtml(synonymsArray);
+			$('#synonyms').html(html);
 			});
+			
+			$( ".link" ).bind( "click", function() {
+					alert("test");
+				});
 			};
 			
 			$('#search1').on('click', function(e){
-			 search();
+			 search($('#input1').val());
 			});
+			
+			/* returns een div met hrefs van de tags en frequencies achter de tag */
+			function createHtml(array)
+			{
+			var words = array[0];
+			var frequency = array[1];
+			var html = $('<div />');
+			$.each( words, function( key, value ) {
+				text = JSON.stringify(value);
+				//html.append('<span><input type="button" class="btn btn-primary link" id="link" onclick="search('+text+')" value='+text+'/> value: '+frequency[key]+'</span><br>');	
+				html.append('<input type="button" value='+text+' onclick=search('+text+') />');
+			});
+			
+			return html;	
+			}
+			
+			/* returns een 2dimensionale array, 
+			array[0] is een array met words, 
+			array[1] is een array met frequencies */
+			
+			function stripTags(string)
+			{
+			var array = string.split("],");
+			var words = [];
+			var frequency = [];
+			$.each( array, function( key, value ) {
+				value = value.replace(/[_\W]+/g, " ");
+				var tmp = value.split(" ");
+				words[key] = tmp[1];
+				frequency[key] = tmp[2];
+			});
+			var result = [];
+			result[0] = words;
+			result[1] = frequency;
+			return result;
+			}
 			
 			function show(sender,element){
 				$(element).fadeToggle("slow");
