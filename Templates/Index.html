@@ -86,9 +86,9 @@
 				<div style="height:50%;">
 					<div id="tabs" class="menu"> <! opening van tab-div !>
 					<ul>
+						<li><a id="wordButton" onclick="ToggleTab(this)" href="#wordDiv">Words</a></li>
 			        	<li><a id="hashButton" onclick="ToggleTab(this)" href="#hashDiv">Hashtags</a></li>
 						<li><a id="mentButton" onclick="ToggleTab(this)" href="#mentionDiv">Mentioned</a></li>
-						<li><a id="wordButton" onclick="ToggleTab(this)" href="#wordDiv">Words</a></li>
 					</ul>
 					<br>
 						<div id="hashDiv">
@@ -98,11 +98,18 @@
 						<span id="screenNames"></span>
 						</div>
 						<div id="wordDiv">
-						<label>Words</label>
-						<span id="wordFr"></span>
-						<br>
-						<label>Very Related Words</label>
-						<span id="veryRelated"></span>
+							<p>
+								<label>Words</label>
+								<span id="wordFr">...</span>
+							</p>
+							<p>
+								<label>Very Related Words</label>
+								<span id="veryRelated">...</span>
+							</p>
+							<p>	
+								<label>Synonyms</label>
+								<span id="synonyms">...</span>
+							</p>
 						</div>
 					</div> <! sluiting van tab-div !>
 				</div>
@@ -137,12 +144,12 @@
 			$('#result').html(container);
 			$('#carousel').html(photocontainer);
 			
-			$('#dump').html(JSON.stringify(json[3]));
-			$('#veryRelated').html(JSON.stringify(json[2]));
 			$('#hashtags').html(JSON.stringify(json[1]["hashtags"]));
 			$('#screenNames').html(JSON.stringify(json[1]["screenNames"]));
 			$('#wordFr').html(JSON.stringify(json[1]["words"]));
 			$('#veryRelated').html(JSON.stringify(json[2]));
+			$('#veryRelated').html(JSON.stringify(json[2]));
+			$('#synonyms').html(JSON.stringify(json[3]));
 			});
 			};
 			
