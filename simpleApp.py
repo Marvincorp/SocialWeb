@@ -43,7 +43,7 @@ def search():
 	synset = set(synonyms)
 	if req.status_code == requests.codes.ok:
 		related = getRelated(req.content)	
-	return json.dumps([search_results, analyse(search_results),related, str(synset)])
+	return json.dumps([search_results, analyse(search_results),related, list(synset)])
 
 def getRelated(xml):
 	parsed = xmltodict.parse(xml)
