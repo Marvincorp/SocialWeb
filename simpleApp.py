@@ -29,11 +29,17 @@ def search():
 	app.logger.debug('You arrived at: Search')
 	app.logger.debug('I received the following arguments: ' + str(request.args) )
 	q = request.args.get('query', None)
-	count = 10
+	count = 5
 	search_results = twitter_api.search.tweets(q=q, count=count, lang="en")
 	statuses = search_results['statuses'] 
 	status_texts = [ status['text']
 		for status in statuses ]	
+	locations = []
+	for status in statuses:
+		if 'coordinate' in status:
+			locations.append(status['coordinate'])
+		else:
+			locations.append('No location')
 	p = {'key': relatedKey, 'base': q}
 	req = requests.get('http://www.veryrelated.com/related-api-v1.php', params = p)
 	synonyms = []
@@ -43,7 +49,7 @@ def search():
 	synset = set(synonyms)
 	if req.status_code == requests.codes.ok:
 		related = getRelated(req.content)	
-	return json.dumps([search_results, analyse(search_results),related, list(synset)])
+	return json.dumps([search_results, analyse(search_results),related, list(synset), locations])
 
 def getRelated(xml):
 	parsed = xmltodict.parse(xml)
