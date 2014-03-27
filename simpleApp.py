@@ -5,6 +5,7 @@ import json
 import nltk
 import xmltodict
 from nltk.corpus import stopwords
+from nltk.corpus import wordnet as wn
 
 app = Flask(__name__)
 
@@ -35,12 +36,19 @@ def search():
 		for status in statuses ]	
 	p = {'key': relatedKey, 'base': q}
 	req = requests.get('http://www.veryrelated.com/related-api-v1.php', params = p)
+	synonyms = []
+	for syn in wn.synsets(q):
+		for lemma in syn.lemma_names:
+			synonyms.append(lemma)
+	synset = set(synonyms)
 	if req.status_code == requests.codes.ok:
 		related = getRelated(req.content)	
-	return json.dumps([search_results, analyse(search_results),related])
+	return json.dumps([search_results, analyse(search_results),related, str(synset)])
 
 def getRelated(xml):
 	parsed = xmltodict.parse(xml)
+	if 'Error' in parsed:
+		return {'No very related words': 0}
 	related = {rel['Text']: rel['HowRelated'] for rel in parsed['ResultSet']['Result']} 
 	return sorted(related.items(), key=lambda t: t[1], reverse=True)
 	
@@ -69,9 +77,9 @@ def analyseText(texts):
 		tokens = text.split()
 		for token in tokens:
 			if token.startswith(prefixes) and token not in skip:
-				skip.append(token)
-			elif token.lower() not in stopwords.words('english') and token not in skip:
-				tokenized.append(token)
+				skip.append(token.lower())
+			elif token.lower() not in stopwords.words('english') and token.lower() not in skip:
+				tokenized.append(token.lower())
 	return tokenized
 	                                                                                                                                                                                                                                                                                                                                                    
 
