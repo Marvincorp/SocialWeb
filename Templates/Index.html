@@ -126,7 +126,12 @@
 					</div>
 				</div>
 			</div> 
-			<p id="dump" style="max-width:100%;overflow: auto"> test </p>
+			<div>
+			<h3>Locaties voor zover aanwezig</h3>
+			<p id="locations" style="max-width:100%;overflow: auto"> test </p>
+			<h3>De "Topics"</h3>
+			<p id="topics" style="max-width:100%;overflow: auto"> test </p>
+			</div>
 		</div>
 		<script>
 			$(document).ready(function () {
@@ -168,7 +173,9 @@
 			html = createHtml(veryRelatedArray);
 			$('#veryRelated').html(html);
 			
-			$('#dump').html(JSON.stringify(json[4]));
+			$('#locations').html(JSON.stringify(json[4]));
+			
+			$('#topics').html(JSON.stringify(json[5]));
 			
 			//$('#veryRelated').html(JSON.stringify(json[2]));
 			

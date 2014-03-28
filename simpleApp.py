@@ -53,9 +53,37 @@ def search():
 		# for lemma in hyp.lemma_names:
 			# hypernyms.append(lemma)
 	# hypset = set(hypernyms)
-	
+	topics = getTopics(search_results)
+	app.logger.debug(str(topics))
 	related = getRelated(q)	
-	return json.dumps([search_results, analyse(search_results),related, list(synset), locations])
+	return json.dumps([search_results, analyse(search_results),related, list(synset), locations, topics])
+	
+def getTopics(search_results):
+	topDict = {}
+	topList = [] # Full topic list
+	topics = {}
+	statuses = search_results['statuses']
+	for status in statuses:
+		tt = [] # Topic list per tweet
+		tweet = status['text'].split()
+		for word in tweet:
+			#print word
+			for syn in wn.synsets(word):
+				#print syn
+				for hyp in syn.hypernyms():
+					if hyp not in tt: tt.append(hyp)
+		topDict[status['text']] = tt
+	for tweet in topDict.keys():
+		for topic in topDict[tweet]:
+			topList.append(topic)
+	topList = list(set(topList))
+	for topic in topList:
+		tweetList = []
+		for tweet in topDict.keys():
+			if topic in topDict[tweet]: tweetList.append(tweet)
+		topics[topic.lemma_names[0]] = tweetList
+	return (topics)
+	
 
 def getRelated(q):
 	p = {'key': relatedKey, 'base': q}
@@ -80,6 +108,7 @@ def analyse(search_results):
 			hashtags.append(tag['text'])
 		for mention in tweet['entities']['user_mentions']:
 			screenNames.append(mention['screen_name'])
+	
 	words = analyseText(texts)
 	return {"hashtags": sorted(Counter(hashtags).items(), key=lambda t: t[1], reverse=True)[:5], "screenNames": sorted(Counter(screenNames).items(), key=lambda t: t[1], reverse=True)[:5], "words": sorted(Counter(words).items(), key=lambda t: t[1], reverse=True)[:5]}
 
@@ -88,7 +117,6 @@ def analyseText(texts):
 	tokenized = []
 	skip = []
 	for text in texts:
-		tokens = []
 		tokens = text.split()
 		for token in tokens:
 			if token.startswith(prefixes) and token not in skip:
