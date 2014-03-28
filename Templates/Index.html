@@ -73,7 +73,7 @@
 		<link rel="stylesheet" type="text/css" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
 		<link rel="stylesheet" type="text/css" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
 		<div class="filler" id="filler"><span>Twitterulization</span>
-		<input style="float:right;margin-right:28px;" type="button" class="btn btn-primary" value="Show Visualization" onclick="show(this,'#wrapper')"/>
+		<input style="float:right;margin-right:28px;" type="button" class="btn btn-primary" value="Show Topics" onclick="show(this,'#topicsDiv')"/>
 		</div>
 		<div class="container-fluid" style="height: 90%">
 			<div class="col-md-4"  style="height:100%">
@@ -120,18 +120,13 @@
 					</div> <! sluiting van tab-div !>
 				</div>	
 				<div style="height:50%;">
-					<div id="wrapper" style="display:none;">
-						<span><img class="img-responsive" src='http://bni.harrymars.nl/denhaag/img/ani.gif'></span>
+					<div id="topicsDiv" onclick="ToggleTab(this)" style="display:none;overflow:auto;height:450px;">
+						<span id="topics"></span>
 						</div>
+
 					</div>
 				</div>
 			</div> 
-			<div>
-			<h3>Locaties voor zover aanwezig</h3>
-			<p id="locations" style="max-width:100%;overflow: auto"> test </p>
-			<h3>De "Topics"</h3>
-			<p id="topics" style="max-width:100%;overflow: auto"> test </p>
-			</div>
 		</div>
 		<script>
 			$(document).ready(function () {
@@ -175,7 +170,11 @@
 			
 			$('#locations').html(JSON.stringify(json[4]));
 			
-			$('#topics').html(JSON.stringify(json[5]));
+			var topics = JSON.stringify(json[5]);
+			var topicsArray = stripTopicTags(topics);
+			html = createTopicHTML(topicsArray);
+			$('#topics').html(html);
+			
 			
 			//$('#veryRelated').html(JSON.stringify(json[2]));
 			
@@ -191,6 +190,53 @@
 			 search($('#input1').val());
 			});
 			
+			function stripTopicTags(string)
+			{
+				var array =	string.split("]");
+				alert(array[0]);
+				var topics = [];
+				var msgs = [];
+				$.each( array, function( key, value ) {
+					var tmp = value.split("[");
+					topics[key] = tmp[0];
+					var msg = tmp[1];
+					msgs[key] = msg;
+					topics[key] = topics[key].replace(/["\W]+/g, " ");
+				});
+				var result = [];
+				result[0] = topics;
+				result[1] = msgs;
+				return result;
+			}
+			
+			/* create dropdown */
+			function createTopicHTML(array){
+				var topics = array[0];
+				var clean_topics = [];
+				var msgs = JSON.stringify(array[1]);
+				var html = $('<div />');
+				$.each( topics, function(key, value) {
+							if(checkDouble(clean_topics,value)){
+								clean_topics[key] = value;
+							}
+						});
+				$.each( clean_topics, function(key, value){
+					topic = value.replace(" ","");
+					topic = JSON.stringify(topic);
+					topic = topic.replace(" ","");
+					html.append('<input type="button" value='+value+' onclick=search('+topic+') />');				
+				});
+				return html;
+			}
+			
+			function checkDouble(array,topic){
+				$.each( array, function(key, value){
+					if(value == topic){
+						return false;
+					}
+				});
+				return true;
+			}
 			/* returns een div met hrefs van de tags en frequencies achter de tag */
 			function createHtml(array) 
 			{
@@ -229,10 +275,10 @@
 			
 			function show(sender,element){
 				$(element).fadeToggle("slow");
-				if(sender.value == "Show Visualization"){
-					sender.value = "Hide Visualization";
+				if(sender.value == "Show Topics"){
+					sender.value = "Hide Topics";
 				} else {
-					sender.value = "Show Visualization";
+					sender.value = "Show Topics";
 				}
 				
 			}
