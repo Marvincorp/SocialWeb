@@ -65,7 +65,7 @@ def getTopics(search_results):
 	statuses = search_results['statuses']
 	for status in statuses:
 		tt = [] # Topic list per tweet
-		tweet = status['text'].split()
+		tweet = analyseText(status)
 		for word in tweet:
 			#print word
 			for syn in wn.synsets(word):
