@@ -97,13 +97,13 @@
 						<li><a id="mentButton" onclick="ToggleTab(this)" href="#mentionDiv">Mentioned</a></li>
 					</ul>
 					<br>
-						<div id="hashDiv" style="overflow:auto;height:450px;">
+						<div id="hashDiv" onclick="ToggleTab(this)" style="overflow:auto;height:450px;">
 						<span id="hashtags"></span>
 						</div>
-						<div id="mentionDiv" style="overflow:auto;height:450px;">
+						<div id="mentionDiv" onclick="ToggleTab(this)" style="overflow:auto;height:450px;">
 						<span id="screenNames"></span>
 						</div>
-						<div id="wordDiv" style="overflow:auto;height:450px;">
+						<div id="wordDiv" class="selected" onclick="ToggleTab(this)" style="overflow:auto;height:450px;">
 							<p>
 								<label>Words</label>
 								<span id="wordFr">...</span>
@@ -195,7 +195,7 @@
 			});
 			
 			/* returns een div met hrefs van de tags en frequencies achter de tag */
-			function createHtml(array)
+			function createHtml(array) 
 			{
 			var words = array[0];
 			var frequency = array[1];
